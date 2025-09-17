@@ -2,6 +2,8 @@
 
 ##### [![become a patron](.assets/patreon-image.png)](https://www.patreon.com/bePatron?u=46113583) If you want to support me or just help me buy doggy treats! Also, you can keep up to date on what I'm working on. I will be announcing any new modules or pre-releases there for anyone wanting to help me test things out!
 
+> Need to build, deploy locally, or publish a release? See: [BUILD-DEPLOY-PUBLISH.md](./BUILD-DEPLOY-PUBLISH.md)
+
 ## [For Developers, please read these instructions](#For-Developers)
 
 ## [DF Curvy Walls](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-curvy-walls/README.md)
