@@ -44,6 +44,7 @@ export default class ControlManager extends Application {
 	#initializationIncomplete = false;
 	/**@type {ToolGroup[]}*/ #_groups = [];
 	/**@type {JQuery<HTMLElement> | null}*/ #magnetMenu = null;
+	/** @type {((this: Window, ev: UIEvent) => any) | null}*/ #onWindowResize = null;
 	/**@type {Record<string, number>}*/ #hooksRegister = {};
 	/**@type {ToolGroup[]}*/ get groups() { return this.#_groups; }
 	/**@type {string|null}*/ activeGroupName = null;
@@ -103,7 +104,9 @@ export default class ControlManager extends Application {
 		this.#hooksRegister['renderSceneControls'] = Hooks.on('renderSceneControls', () => { this.refresh(); this.#_handleWindowResize(); });
 		this.#hooksRegister['collapseSceneNavigation'] = Hooks.on('collapseSceneNavigation', this.#_handleWindowResize.bind(this));
 		this.#hooksRegister['renderPlayerList'] = Hooks.on('renderPlayerList', this.#_handleWindowResize.bind(this));
-		window.addEventListener('resize', this.#_handleWindowResize.bind(this));
+		// Store the bound handler so we can remove it later
+		this.#onWindowResize = this.#_handleWindowResize.bind(this);
+		window.addEventListener('resize', this.#onWindowResize);
 		for (const group of this.#_groups) {
 			// Initialize all unset fields to their defaults
 			ControlManager.#initializeFields(group);
@@ -202,7 +205,8 @@ export default class ControlManager extends Application {
 		html.find('.control-tool[data-tool]').on('click', this.#_onClickTool.bind(this));
 		html.find('#magnet').on('click', async () => {
 			if (this.#magnetMenu) return;
-			this.#magnetMenu = $(await renderTemplate(`/modules/${SETTINGS.MOD_NAME}/templates/magnet.hbs`, {}));
+			// Use the namespaced renderTemplate API (v13+)
+			this.#magnetMenu = $(await foundry.applications.handlebars.renderTemplate(`/modules/${SETTINGS.MOD_NAME}/templates/magnet.hbs`, {}));
 			this.#magnetMenu.find('button').on('click', async event => {
 				this.#magnetMenu.remove();
 				this.#magnetMenu = null;
@@ -301,7 +305,7 @@ export default class ControlManager extends Application {
 		if (this.#initializationIncomplete) await this.#completeInitialization();
 		if (!game.ready) return;
 		await super._render(force, options);
-		if (ui.sidebar._collapsed) {
+		if (ui?.sidebar?._collapsed) {
 			this.element.css('right', '35px');
 		}
 		if (!this.element || !this.element[0]) return;
@@ -327,7 +331,7 @@ export default class ControlManager extends Application {
 		Hooks.off('renderSceneControls', this.#hooksRegister['renderSceneControls']);
 		Hooks.off('collapseSceneNavigation', this.#hooksRegister['collapseSceneNavigation']);
 		Hooks.off('renderPlayerList', this.#hooksRegister['renderPlayerList']);
-		window.removeEventListener('resize', this.#_handleWindowResize);
+		if (this.#onWindowResize) window.removeEventListener('resize', this.#onWindowResize);
 		return super.close(options);
 	}
 
@@ -343,9 +347,10 @@ export default class ControlManager extends Application {
 		// max = Math.floor(sceneLayers.offsetHeight / ControlManager.#CONTROL_WIDTH);
 		// cols = Math.ceil(sceneLayers.childElementCount / max);
 		let cols = 1;
-		/**@type {HTMLElement}*/const sceneTools = document.querySelector('#controls > ol.sub-controls.app.control-tools.flexcol.active');
-		const max = Math.floor(sceneTools.offsetHeight / ControlManager.#CONTROL_HEIGHT);
-		cols += Math.ceil(sceneTools.childElementCount / max);
+		/**@type {HTMLElement|null}*/const sceneTools = document.querySelector('#controls > ol.sub-controls.app.control-tools.flexcol.active');
+		const max = sceneTools ? Math.max(1, Math.floor(sceneTools.offsetHeight / ControlManager.#CONTROL_HEIGHT)) : 1;
+		const childCount = sceneTools ? sceneTools.childElementCount : 0;
+		cols += Math.ceil(childCount / Math.max(1, max));
 		return cols * ControlManager.#CONTROL_WIDTH + 25;
 	}
 	/**
@@ -354,18 +359,24 @@ export default class ControlManager extends Application {
 	 */
 	#getTopHeight(magnetToSceneControls) {
 		if (magnetToSceneControls) {
-			/**@type {HTMLElement}*/const uiTop = document.querySelector('#ui-middle #ui-top #navigation');
-			/**@type {HTMLElement}*/const layers = document.querySelector('#ui-left > #controls > ol.main-controls.app.control-tools.flexcol');
-			return Math.max(uiTop.offsetTop + uiTop.offsetHeight, layers.offsetTop);
+			/**@type {HTMLElement|null}*/const uiTop = document.querySelector('#ui-middle #ui-top #navigation');
+			/**@type {HTMLElement|null}*/const layers = document.querySelector('#ui-left > #controls > ol.main-controls.app.control-tools.flexcol');
+			const uiTopBottom = uiTop ? (uiTop.offsetTop + uiTop.offsetHeight) : 0;
+			const layersTop = layers ? layers.offsetTop : 0;
+			return Math.max(uiTopBottom, layersTop);
 		} else {
-			/**@type {HTMLElement}*/const loadBar = document.querySelector('#ui-middle #ui-top #loading');
+			/**@type {HTMLElement|null}*/const loadBar = document.querySelector('#ui-middle #ui-top #loading');
 			//* The 4 is a small padding to give the loading bar some space and also happens to align with the scene controls
-			return loadBar.offsetHeight + 4;
+			return (loadBar?.offsetHeight ?? 0) + 4;
 		}
 	}
+
+	// Public wrappers used by df-curvy-walls for positioning the toolbar
+	getLeftWidth() { return this.#getLeftWidth(); }
+	getTopHeight(magnetToSceneControls) { return this.#getTopHeight(magnetToSceneControls); }
 	#_handleWindowResize() {
 		/**@type {JQuery<HTMLElement>}*/ const element = this._element;
-		if (element.length === 0) return;
+		if (!element || element.length === 0 || !element[0]) return;
 		/**@type {number}*/ let max;
 		/**@type {number}*/ let cols;
 
@@ -377,75 +388,115 @@ export default class ControlManager extends Application {
 			case 'top': {
 				element.detach().insertBefore('#ui-top #loading');
 				element[0].style.marginTop = this.#getTopHeight(false) + 'px';
-				element[0].style.marginLeft = -element[0].querySelector("#magnet").offsetWidth + 'px';
-				element[0].style.height = undefined;
+				const magnetEl = element[0].querySelector('#magnet');
+				const magnetWidth = magnetEl?.offsetWidth ?? 0;
+				element[0].style.marginLeft = -magnetWidth + 'px';
+				element[0].style.height = '';
 				break;
 			}
 			case 'left': {
 				element.detach().appendTo('#ui-left');
-				/**@type {HTMLElement}*/const controls = document.querySelector('#ui-left > #controls');
-				element[0].style.height = `${controls.offsetHeight}px`;
-				max = Math.floor(controls.offsetHeight / ControlManager.#CONTROL_WIDTH);
-				cols = Math.ceil(this.groups.length / max);
-				element.find('.group-tools').css('margin-left', `${(cols - 1) * (ControlManager.#CONTROL_WIDTH + 2)}px`);
+				/**@type {HTMLElement|null}*/ const controls = document.querySelector('#ui-left > #controls');
+				if (controls) {
+					element[0].style.height = `${controls.offsetHeight}px`;
+					max = Math.max(1, Math.floor(controls.offsetHeight / ControlManager.#CONTROL_WIDTH));
+					cols = Math.ceil(this.groups.length / max);
+					element.find('.group-tools').css('margin-left', `${(cols - 1) * (ControlManager.#CONTROL_WIDTH + 2)}px`);
+				} else {
+					element[0].style.height = '';
+					element.find('.group-tools').css('margin-left', '');
+				}
 				element[0].style.marginTop = this.#getTopHeight(true) + 'px';
 				element[0].style.marginLeft = this.#getLeftWidth() + 'px';
 				break;
 			}
 			case 'bottom': {
 				element.detach().appendTo('#ui-bottom');
-
-				/**@type {HTMLElement}*/ const magnet = element[0].querySelector("#magnet");
-				/**@type {HTMLElement}*/ const folder = document.querySelector('#hotbar > #hotbar-directory-controls');
-				/**@type {HTMLElement}*/ const action = document.querySelector('#hotbar > #action-bar');
-
-				const left = 2 + action.offsetLeft - magnet.offsetWidth;
+				const magnet = element[0].querySelector('#magnet');
+				const folder = document.querySelector('#hotbar > #hotbar-directory-controls');
+				const action = document.querySelector('#hotbar > #action-bar');
+				const left = 2 + ((action?.offsetLeft ?? 0)) - ((magnet?.offsetWidth ?? 0));
 				element[0].style.left = left + 'px';
-				element[0].style.bottom = (folder.offsetHeight + 10) + 'px';
+				element[0].style.bottom = ((folder?.offsetHeight ?? 0) + 10) + 'px';
 				break;
 			}
-			case 'right': default: {
+			case 'right':
+			default: {
 				element.detach().appendTo('#ui-right');
-				max = Math.floor(element[0].offsetHeight / ControlManager.#CONTROL_WIDTH);
+				max = Math.max(1, Math.floor(element[0].offsetHeight / ControlManager.#CONTROL_WIDTH));
 				cols = Math.ceil(this.groups.length / max);
 				element.find('.group-tools').css('margin-right', `${(cols - 1) * (ControlManager.#CONTROL_WIDTH + 2)}px`);
-				element[0].style.top = document.getElementById("sidebar-tabs").offsetTop + 'px';
-				element[0].style.left = -element[0].offsetWidth + 'px';
+				const sidebarTabs = document.getElementById('sidebar-tabs');
+				element[0].style.top = ((sidebarTabs?.offsetTop ?? 0) + 'px');
+				const elWidth = element[0].offsetWidth ?? 0;
+				element[0].style.left = -elWidth + 'px';
 				break;
 			}
 		}
 	}
 
 	/**
+	 * Activate a group by its name (non-toggle, non-button groups only).
+	 * Ensures previous group and tool are deactivated and a valid tool in the new group is activated.
 	 * @param {string} groupName
 	 * @returns {Promise<void>}
 	 */
 	async activateGroupByName(groupName) {
 		const group = this.groups.find(x => x.name === groupName);
 		if (!group) {
-			console.warn(`ControlManager::activateGroupByName > Attempted to activate ToolGroup with non-existant name '${groupName}'`);
+			console.warn(`ControlManager::activateGroupByName > Attempted to activate ToolGroup with non-existent name '${groupName}'`);
 			return;
 		}
 		if (group.button || group.toggle) {
-			console.warn(`ControlManager::activateGroupByName > Attempted to activate ToolGroup that is either a button or toggle`);
+			console.warn(`ControlManager::activateGroupByName > Attempted to activate Group that is either a button or toggle`);
 			return;
 		}
 		if (this.activeGroupName === groupName) {
 			this.refresh();
 			return;
 		}
+
 		const prevGroup = this.activeGroup;
 		this.activeGroupName = groupName;
-		// Deactivate previous group
+
+		// Deactivate previous group and its active tool
 		if (prevGroup) {
 			prevGroup.isActive = false;
 			await this.#_invokeHandler(prevGroup.onClick, prevGroup, false);
+			if (prevGroup.activeTool && prevGroup.tools) {
+				const prevTool = prevGroup.tools.find(x => x.name === prevGroup.activeTool);
+				if (prevTool) {
+					prevTool.isActive = false;
+					await this.#_invokeHandler(prevTool.onClick, prevTool, false);
+				}
+			}
 		}
+
 		// Activate new group
 		group.isActive = true;
 		await this.#_invokeHandler(group.onClick, group, true);
+
+		// Ensure an active tool exists and is activated
+		let tool = group.tools ? group.tools.find(t => t.name === group.activeTool) : undefined;
+		if (!tool && group.tools) {
+			for (const t of group.tools) {
+				const visible = await ControlManager.checkBoolean(t.visible, true);
+				if (!t.button && !t.toggle && visible) {
+					group.activeTool = t.name;
+					t.isActive = true;
+					tool = t;
+					break;
+				}
+			}
+		} else if (tool) {
+			tool.isActive = true;
+		}
+		if (tool) {
+			await this.#_invokeHandler(tool.onClick, tool, true);
+		}
+
 		this.refresh();
-		Hooks.callAll("toolGroupActivated", this, group);
+		if (Hooks?.callAll) Hooks.callAll("groupActivated", this, group);
 	}
 	/**
 	 * @param {string} groupName

@@ -30,13 +30,13 @@ MODE_NAMES[Mode.Circ] = 'beziercirc';
 MODE_NAMES[Mode.Rect] = 'bezierrect';
 
 class WallPool {
-	/**@readonly @type {Wall[]}*/ static walls = [];
+	/**@readonly @type {any[]}*/ static walls = [];
 	/**
 	 * @param {WallData} wallData
-	 * @returns {Wall}
+	 * @returns {any} // foundry.canvas.placeables.Wall
 	 */
 	static acquire(wallData) {
-		const result = new Wall(new WallDocument(wallData, { parent: canvas.scene }));
+		const result = new foundry.canvas.placeables.Wall(new foundry.documents.WallDocument(wallData, { parent: canvas.scene }));
 		wallData = foundry.utils.deepClone(wallData);
 		delete wallData._id;
 		result.document = foundry.utils.mergeObject(result.document, wallData);
@@ -275,6 +275,25 @@ export class CurvyWallToolManager {
 	}
 
 	#graphicsContext = new PIXI.Graphics(null);
+
+	/**
+	 * Get base WallData for the current tool across Foundry versions.
+	 * Prefers WallsLayer.getWallDataFromActiveTool (v13+),
+	 * falls back to _getWallDataFromActiveTool (older),
+	 * otherwise returns a fresh WallDocument's default data.
+	 * @returns {any}
+	 */
+	#getWallDefaults() {
+		const layer = this.#wallsLayer;
+		try {
+			if (layer && typeof layer.getWallDataFromActiveTool === 'function')
+				return layer.getWallDataFromActiveTool(game.activeTool);
+			if (layer && typeof layer._getWallDataFromActiveTool === 'function')
+				return layer._getWallDataFromActiveTool(game.activeTool);
+		} catch (_) { /* ignore and fall through */ }
+		// Fallback: return a plain object; downstream code sets data.c before any validation
+		return {};
+	}
 	render() {
 		this.#wallsLayer.preview.removeChildren();
 		if (this.currentlyMappingPoints) {
@@ -290,7 +309,7 @@ export class CurvyWallToolManager {
 		const pointData = this.activeTool?.getSegments(this.segments);
 		if (pointData.length == 0) return;
 		this.#walls.length;
-		/**@type {WallData}*/const wallData = this.#wallsLayer._getWallDataFromActiveTool(game.activeTool);
+		/**@type {WallData}*/const wallData = this.#getWallDefaults();
 
 		while (this.#walls.length > pointData.length - 1) {
 			const wall = this.#walls.pop();
@@ -301,7 +320,10 @@ export class CurvyWallToolManager {
 			for (let c = 0; c < points.length - 1; c++) {
 				/**@type {WallData}*/const data = foundry.utils.duplicate(wallData);
 				delete data._id;
-				data.c = [points[c].x, points[c].y, points[c + 1].x, points[c + 1].y];
+				data.c = [
+					Math.round(points[c].x), Math.round(points[c].y),
+					Math.round(points[c + 1].x), Math.round(points[c + 1].y)
+				];
 				if (c == this.#walls.length) {
 					this.#walls.push(WallPool.acquire(data));
 					this.#wallsLayer.preview.addChild(this.#walls[c]);
@@ -322,7 +344,10 @@ export class CurvyWallToolManager {
 			for (let c = 0; c < points.length; c++) {
 				/**@type {WallData}*/const data = foundry.utils.duplicate(wallData);
 				delete data._id;
-				data.c = [points[c][0].x, points[c][0].y, points[c][1].x, points[c][1].y];
+				data.c = [
+					Math.round(points[c][0].x), Math.round(points[c][0].y),
+					Math.round(points[c][1].x), Math.round(points[c][1].y)
+				];
 				if (c == this.#walls.length) {
 					this.#walls.push(WallPool.acquire(data));
 					this.#wallsLayer.preview.addChild(this.#walls[c]);
@@ -345,11 +370,11 @@ export class CurvyWallToolManager {
 	}
 
 	init() {
-		libWrapper.register(SETTINGS.MOD_NAME, 'Wall.prototype._onDragLeftStart', (/**@type {any}*/wrapper,/**@type {any[]}*/...args) => {
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.placeables.Wall.prototype._onDragLeftStart', (/**@type {any}*/wrapper,/**@type {any[]}*/...args) => {
 			this.clearTool();
 			wrapper(...args);
 		}, 'WRAPPER');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype.clearPreviewContainer', (/**@type {Function}*/wrapped) => {
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype.clearPreviewContainer', (/**@type {Function}*/wrapped) => {
 			this.clearTool();
 			return wrapped();
 		}, 'WRAPPER');
@@ -357,12 +382,27 @@ export class CurvyWallToolManager {
 
 	patchWallsLayer() {
 		this.#wallsLayer = canvas.walls;
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onClickLeft', CurvyWallToolManager._onClickLeft, 'MIXED');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onDragLeftStart', CurvyWallToolManager._onDragLeftStart, 'MIXED');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onDragLeftMove', CurvyWallToolManager._onDragLeftMove, 'MIXED');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onDragLeftDrop', CurvyWallToolManager._onDragLeftDrop, 'MIXED');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onDragLeftCancel', CurvyWallToolManager._onDragLeftCancel, 'MIXED');
-		libWrapper.register(SETTINGS.MOD_NAME, 'WallsLayer.prototype._onClickRight', CurvyWallToolManager._onClickRight, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onClickLeft', CurvyWallToolManager._onClickLeft, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onDragLeftStart', CurvyWallToolManager._onDragLeftStart, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onDragLeftMove', CurvyWallToolManager._onDragLeftMove, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onDragLeftDrop', CurvyWallToolManager._onDragLeftDrop, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onDragLeftCancel', CurvyWallToolManager._onDragLeftCancel, 'MIXED');
+		libWrapper.register(SETTINGS.MOD_NAME, 'foundry.canvas.layers.WallsLayer.prototype._onClickRight', CurvyWallToolManager._onClickRight, 'MIXED');
+		// Suppress benign libWrapper conflict warnings with Monks modules for these handlers.
+		try {
+			const ignoreIds = ['monks-active-tiles', 'monks-wall-enhancement'];
+			const targets = [
+				'foundry.canvas.layers.WallsLayer.prototype._onClickLeft',
+				'foundry.canvas.layers.WallsLayer.prototype._onDragLeftStart',
+				'foundry.canvas.layers.WallsLayer.prototype._onDragLeftMove',
+				'foundry.canvas.layers.WallsLayer.prototype._onDragLeftDrop',
+				'foundry.canvas.layers.WallsLayer.prototype._onDragLeftCancel',
+				'foundry.canvas.layers.WallsLayer.prototype._onClickRight'
+			];
+			libWrapper.ignore_conflicts?.(SETTINGS.MOD_NAME, ignoreIds, targets);
+		} catch (e) {
+			console.debug('df-curvy-walls: libWrapper.ignore_conflicts not available or failed', e);
+		}
 		Hooks.on('requestCurvyWallsRedraw', () => this.render());
 	}
 

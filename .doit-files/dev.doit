@@ -18,9 +18,20 @@ dev {
 		echo "\e[90m$date_string\e[32m Override Target: \e[34m$$($doit_env tgt -r)\e[0m"
 	fi
 	module=`$doit_env tgt -r`
-	fdata="$$(jq -r .foundry.data .devenv)/Data/modules/$$module"
+	# Resolve modules directory from the configured data path.
+	# If .foundry.data is the dataPath ROOT (contains 'Data', 'Config', 'Logs'), use "$dataRoot/Data/modules".
+	# If it's the inner Data directory itself (contains 'modules', 'systems', 'worlds'), use "$dataRoot/modules".
+	dataRoot="$$(jq -r .foundry.data .devenv)"
+	if [ -d "$$dataRoot/Data" ]; then
+		modules_dir="$$dataRoot/Data/modules"
+	else
+		modules_dir="$$dataRoot/modules"
+	fi
+	fdata="$$modules_dir/$$module"
+	# Ensure parent exists to avoid copy failures on fresh installs
+	mkdir -p "$$modules_dir" || exit 1
 	rm -Rf "$$fdata"
-	cp -Lr "./$$module" "$$fdata"
+	cp -Lr "./$$module" "$$fdata" || exit 1
 	$doit_dev proc_sass "$$fdata"
 	$doit_dev proc_module "$$fdata"
 	echo "\e[90m$date_string\e[32m Copied \e[34m$$module\e[32m to \e[33m$$fdata"

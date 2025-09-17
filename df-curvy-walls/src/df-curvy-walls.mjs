@@ -84,7 +84,8 @@ Hooks.on('renderSceneControls', async (/**@type {SceneControls}*/controls) => {
 	if (game.settings.get('core', 'noCanvas')) return;
 	if (!game.modules.get('lib-wrapper')?.active) return;
 	if (!game.user.isGM) return;
-	if (controls.activeControl !== 'walls') {
+	const activeName = controls?.control?.name ?? controls?.activeControl;
+	if (activeName !== 'walls') {
 		await curvyWallApp.close();
 		if (moduleControls._state === 2)
 			moduleControls.refresh();

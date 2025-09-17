@@ -12,7 +12,9 @@ export class CurvyWallsToolBar extends Application {
 					icon: '<i class="fas fa-bezier-curve"></i>',
 					title: 'Curvy Walls Tools',
 					visible: () => {
-						return ui.controls.activeControl === 'walls';
+						// v13+: controls.control?.name is the supported API; fall back to activeControl for older versions
+						const name = ui?.controls?.control?.name ?? ui?.controls?.activeControl;
+						return name === 'walls';
 					},
 					tools: [
 						{

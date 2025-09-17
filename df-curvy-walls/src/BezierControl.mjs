@@ -24,14 +24,15 @@ MODE_NAMES[Mode.Quad] = 'bezierquad';
 MODE_NAMES[Mode.Cube] = 'beziercube';
 MODE_NAMES[Mode.Circ] = 'beziercirc';
 MODE_NAMES[Mode.Rect] = 'bezierrect';
+
 class WallPool {
-	/**@type {Wall[]}*/static walls = [];
+	/**@type {any[]}*/static walls = [];
 	/**
 	 * @param {WallData} wallData
 	 * @returns {Wall}
 	 */
 	static acquire(wallData) {
-		const result = this.walls.pop() ?? new Wall(new WallDocument(wallData));
+		const result = this.walls.pop() ?? new foundry.canvas.placeables.Wall(new foundry.documents.WallDocument(wallData));
 		result.document = wallData;
 		return result;
 	}
@@ -110,7 +111,7 @@ export class CurvyWallToolManager {
 
 	async apply() {
 		if (!this.activeTool || this.activeTool.mode != ToolMode.Placed) return;
-		await WallDocument.createDocuments(this.#walls.map(e => e.document));
+		await foundry.documents.WallDocument.createDocuments(this.#walls.map(e => e.document));
 		this.clearTool();
 	}
 
@@ -129,7 +130,15 @@ export class CurvyWallToolManager {
 		const pointData = this.activeTool?.getSegments(this.segments);
 		if (pointData.length == 0) return;
 		this.#walls.length;
-		/**@type {WallData}*/const wallData = this.#wallsLayer._getWallDataFromActiveTool(game.activeTool);
+		// Resolve wall defaults in a version-safe way
+		let wallData;
+		try {
+			if (this.#wallsLayer && typeof this.#wallsLayer.getWallDataFromActiveTool === 'function')
+				wallData = this.#wallsLayer.getWallDataFromActiveTool(game.activeTool);
+			else if (this.#wallsLayer && typeof this.#wallsLayer._getWallDataFromActiveTool === 'function')
+				wallData = this.#wallsLayer._getWallDataFromActiveTool(game.activeTool);
+		} catch (_) { /* ignore */ }
+		if (!wallData) wallData = {};
 
 		while (this.#walls.length > pointData.length - 1) {
 			const wall = this.#walls.pop();
@@ -140,7 +149,10 @@ export class CurvyWallToolManager {
 			/**@type {PIXI.Point[]}*/const points = pointData;
 			for (let c = 0; c < points.length - 1; c++) {
 				/**@type {WallData}*/const document = foundry.utils.duplicate(wallData);
-				document.c = [points[c].x, points[c].y, points[c + 1].x, points[c + 1].y];
+				document.c = [
+					Math.round(points[c].x), Math.round(points[c].y),
+					Math.round(points[c + 1].x), Math.round(points[c + 1].y)
+				];
 				if (c == this.#walls.length) {
 					this.#walls.push(WallPool.acquire(document));
 					this.#wallsLayer.preview.addChild(this.#walls[c]);
@@ -161,7 +173,10 @@ export class CurvyWallToolManager {
 			}
 			for (let c = 0; c < points.length; c++) {
 				/**@type {WallData}*/const document = foundry.utils.duplicate(wallData);
-				document.c = [points[c][0].x, points[c][0].y, points[c][1].x, points[c][1].y];
+				document.c = [
+					Math.round(points[c][0].x), Math.round(points[c][0].y),
+					Math.round(points[c][1].x), Math.round(points[c][1].y)
+				];
 				if (c == this.#walls.length) {
 					this.#walls.push(WallPool.acquire(document));
 					this.#wallsLayer.preview.addChild(this.#walls[c]);
