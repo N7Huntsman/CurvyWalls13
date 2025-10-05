@@ -1,131 +1,91 @@
-# Dragon Flagon Mods for Foundry VTT
+# DragonFlagon Curvy Walls
 
-##### [![become a patron](.assets/patreon-image.png)](https://www.patreon.com/bePatron?u=46113583) If you want to support me or just help me buy doggy treats! Also, you can keep up to date on what I'm working on. I will be announcing any new modules or pre-releases there for anyone wanting to help me test things out!
+![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-curvy-walls) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-curvy-walls) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-curvy-walls%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-curvy-walls/)
 
-## [For Developers, please read these instructions](#For-Developers)
+![Curvy Walls Banner](../.assets/df-curvy-walls/banner.png)
 
-## [DF Curvy Walls](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-curvy-walls/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-curvy-walls) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-curvy-walls) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-curvy-walls%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-curvy-walls/)  
-New wall tools for drawing walls along a Bézier curve, an ellipse, or a rectangle.
+Adds Bezier Curves and Ellipse tools to the walls layer. This gives you the ability to generate wall segments along a curve quickly and easily. You can also increase or decrease the number of wall segments used along the curve.
 
-## [Library: DF Module Buttons](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/lib-df-buttons/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flib-df-buttons) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Flib-df-buttons) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Flib-df-buttons%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/lib-df-buttons/)  
-Library that provides a way for modules to register controls outside of the scene layer controls.
+| Cubic Bezier Curve | Quadratic Bezier Curve |
+| :-: | :-: |
+| [![Cubic Curve](../.assets/df-curvy-walls/cubic.gif)](https://github.com/flamewave000/dragonflagon-fvtt/issues/18) | [![Quadratic Curve](../.assets/df-curvy-walls/quadratic.gif)](https://github.com/flamewave000/dragonflagon-fvtt/issues/19) |
 
-## [DF Settings Clarity](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-settings-clarity/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-settings-clarity) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-settings-clarity) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Flib-df-hotkeys%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-settings-clarity/)  
-Displays a tag next to each module setting, indicating if it is a World setting (GM Only) or a client setting (Per User).
+| Ellipse With Slicing | Rectangle with Segmented Sides |
+| :-: | :-: |
+| [![Ellipse Curve](../.assets/df-curvy-walls/ellipse.gif)](https://github.com/flamewave000/dragonflagon-fvtt/issues/20) | [![Rectangle](../.assets/df-curvy-walls/rectangle.gif)](https://github.com/flamewave000/dragonflagon-fvtt/issues/20) |
 
-## [DF Active Lights](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-active-lights/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-active-lights) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-active-lights) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-active-lights%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-active-lights/)  
-Allows you to animate the various properties of a light, such as emission angle, color, or direction.
+##### [![become a patron](../.assets/patreon-image.png)](https://www.patreon.com/bePatron?u=46113583) If you want to support me or just help me buy doggy treats! Also, you can keep up to date on what I'm working on. I will be announcing any new modules or pre-releases there for anyone wanting to help me test things out!
 
-## [DF Chat Enhancements](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-chat-enhance/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-chat-enhance) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-chat-enhance) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-chat-enhance%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-chat-enhance/)  
-Various enhancements to the chat. Roll types as buttons, Adventure Logs, chat message editing, and chat archiving.
+## Dismiss Current Tool Shortcut
 
-## [DF Scene Enhancement](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-scene-enhance/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-scene-enhance) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-scene-enhance) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-scene-enhance%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-scene-enhance/)  
-A few enhancements to scene management for players and GMs.
+You can quickly remove and disable the current tool by <kbd>Ctrl</kbd>&nbsp;+&nbsp;<kbd>Right-Click</kbd>ing anywhere on the screen. This is useful if you've just placed a curved wall and want to jump back into making regular walls again without having to go and click the tool's toggle button.
 
-## [DF Quality of Life](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-qol/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-qol) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-qol) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-qol%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-qol/)  
-Various small self-contained modifications to improve life in FoundryVTT.
+## Bezier Curves
 
-## [DF Template Enhancements](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-templates/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-templates) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-templates) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-templates%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-templates/)  
-Various enhancements to the FoundryVTT Templates layer. This brings different forms of template grid highlighting and auto-targetting features.
+Supports both a Quadratic and Cubic curve to give differing forms of curve generation. The Quadratic curve may be of very niche use but gives a very fast way to create a simple curve. The Cubic curve is very powerful though, and provides a great to create "just the right" curve.
 
-## [DF Manual Rolls](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-manual-rolls/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-manual-rolls) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-manual-rolls) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-manual-rolls%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-manual-rolls/)  
-A niche tool for entering the results of dice manually. Good for in-person games, or for people who just like rolling real dice.
+## Ellipse Curve
 
-## [DF User Logger](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-logger/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-logger) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-logger) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-logger%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-logger/)  
-User login/logout module that adds an expiring message to the chat log when a user logs in/out of the server.
+Generates a simple ellipse that can be squished and stretched. You can cut a "slice" out of the ellipse to create an opening, and you can specify the arc offset of the walls so the segments are position at the right point along the curve.
 
-## [DF Flags Editor](https://github.com/flamewave000/dragonflagon-fvtt/blob/master/df-flag-edit/README.md)
-![Forge Installs](https://img.shields.io/badge/dynamic/json?color=red&label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-flag-edit) ![Latest Version](https://img.shields.io/badge/dynamic/json?label=Latest%20Release&prefix=v&query=package.versions%5B0%5D&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fdf-flag-edit) [![Foundry Hub Endorsements](https://img.shields.io/endpoint?logoColor=white&url=https%3A%2F%2Fwww.foundryvtt-hub.com%2Fwp-json%2Fhubapi%2Fv1%2Fpackage%2Fdf-flag-edit%2Fshield%2Fendorsements)](https://www.foundryvtt-hub.com/package/df-flag-edit/)  
+You can place a perfect circle by holding the <kbd>Alt</kbd> key while placing or adjusting the ellipse tool.
 
-## [DragonFlagon FVTT Enhancement Suite](https://github.com/flamewave000/df-fvtt-enhancement-suite)
-DragonFlagon Enhancement Suite Patch for Foundry VTT
+You can have the tool grow the circle out from a center point by holding the <kbd>Ctrl</kbd> key while placing the ellipse tool. Useful if you know where the center of a room is and just want to grow the wall tool out from there.
+
+## Rectangle Tool
+
+Generates walls in a rectangle. This also allows you to specify the number of segments for each side, including having a side with no walls!
+
+You can place a perfect square by holding the <kbd>Alt</kbd> key while placing or adjusting the ellipse tool.
+
+You can have the tool grow the rectangle out from a center point by holding the <kbd>Ctrl</kbd> key while placing the ellipse tool. Useful if you know where the center of a room is and just want to grow the wall tool out from there.
+
+![Special placement of Ellipse and Rectangle tools](../.assets/df-curvy-walls/circ-rect-special-placement.gif)
+
+## Shape Tracing
+
+For the Quadratic Bezier Curve, Ellipse, and Rectangle tools, you can now plot points along the shape to fit the placement tool to. Unfortunately Cubic Bezier curves can not be easily approximated, and therefore it is not traceable. Also, ellipses cannot be generated by fewer than 5 points and each points needs to be precisely placed, so the trace tool will only generate perfect circles using 2 points (the first being the center and the second being the edge) or 3 points (all three points are on the edge of the circle).
+
+To place points, simply <kbd>Left-Click</kbd> on the canvas. You can also drag an existing point by <kbd>Left-Click Drag</kbd>. To remove a point, simply <kbd>Ctrl</kbd>&nbsp;+&nbsp;<kbd>Left-Click</kbd>
+
+![Shape Tracing for Tool Placement](../.assets/df-curvy-walls/tracing.gif)
+
+## Move or Place Most Recent Configuration
+
+If you have configured a tool to match that perfect circle for a tower but have a couple more identical towers to do, you can simply <kbd>Ctrl</kbd>&nbsp;+&nbsp;<kbd>Left-Click</kbd> the canvas to place the tool using the most recent configuration.
+
+![Clone recent tool config to new location](../.assets/df-curvy-walls/clone-tool.gif)
+
+## Uses the Current Wall Type Selection
+
+![Wall Type Selection](../.assets/df-curvy-walls/types.webp)
+
+## Community Libraries Used
+
+- BezierJS by Pomax [[Project](https://pomax.github.io/bezierjs)] [[Repositiory](https://github.com/Pomax/bezierjs)]
+
+## Contributors
+
+- [José E. Lozano (Viriato139ac#0342)](https://github.com/lozalojo): Spanish localization
+- Touge & [BrotherSharper](https://github.com/BrotherSharper): Japanese localization
+
+## Changelog
+
+You can find all the latest updates [in the CHANGELOG](./CHANGELOG.md)
 
 ---
+---
 
-# For Developers
+## Building the module
+This module requires NPM in order to be compiled as it uses TypeScript and Gulp.
+- Make sure you have NPM installed: [Get NPM](https://www.npmjs.com/get-npm)
+- Open a terminal in the module directory `/path/to/repo/dragonflagon-fvtt/df-curvy-walls/`
+- Run the following `npm install`
+- After that finishes you can simply run `npx gulp`
+- You will find the compiled module in the now available `dist/` folder.
 
-If you wish to contribute to any modules, please perform the following to build any module in the project. The build system requires a unix system (WSL, Mac, or any Linux).
-
-## Install DOIT
-
-I have converted over to using DOIT scripts for my build environment. It works way better than a bunch of NPM scripts or regular bash shell scripts.
-
-You can find the DOIT script project here: [DOIT](https://github.com/flamewave000/doit)
-The Latest Release that can be downloaded: [Latest Release](https://github.com/flamewave000/doit/releases/latest)
-
-## Initialize Environment
-
-First execute the following command inside the project's root directory:
-
-```bash
-doit init
-```
-
-### Setup Foundry Environment
-
-If you wish to use all of the commands `launch`, `devbuild` and `devwatch`, you will need to initialize the full Foundry Environment. This also requires you to have the Node version of Foundry installed. This only needs to be done once, or after you move the Server or Data directories.
-
-```bash
-doit env /path/to/foundryvtt /path/to/foundrydata
-```
-
- - `/path/to/foundryvtt`: This is the absolute path to your FoundryVTT installation directory
- - `/path/to/foundrydata`: This is the absolute path to your FoundryVTT Data directory
-
-### Set Target Module
-
-To perform builds, you must set the current module target. This is done by running the following command with the desired target module's name.
-
-```bash
-doit tgt df-curvy-walls
-```
-
-## Commands
-
-Once you have your environment and target module set up, you can simply type `doit` into the console while in the root directory and it will display all of the available commands and help docs for them.
-
-```
-localhost:~/dragonflagon-fvtt $ doit
-Usage: doit <target> [args...]
-
-TARGETS
-   clean [-g]
-          Cleans up the target module directory
-          -g  If specified, will remove the global build files/directories
-     dev [module_name]
-          Copy the targetted module's data to the set foundry data directory
-          module_name  Provide the module name you wish to deploy instead of
-                       the current target
-     env <f-path> <f-data>
-          Set the foundry environment
-          f-path  Path to the Foundry Install directory
-          f-data  Path to the Foundry Data directory
-  getref  Create a sym-link to the foundry.js file found in the set environment.
-          This reference is used for type hinting and for checking on how Foundry
-          does certain things.
-    init [-g]
-          Initializes the currently targetted module
-          -g  This is to initlaize the global environment
-  launch  Launch the foundry server
-    lint  Run ESLint to check validity of files
-    pack  Package the targetted module for release
-     tag  Tag the current commit for release of the currently targetted module
-     tgt [name] [-r]
-          Get/Set the target module for development/release. If no target name
-          is provided, it will print the current target.
-          name  name of the target to be set
-            -r  If you omit a name, this will print the current target raw.
-   watch  Watches the current target module for file changes and executes `dev`
-          if a change occurs
-```
-
+### Auto-deploy to local FoundryVTT
+If you want to have the compiled module output to the FoundryVTT installation instead of to the `dist/` folder, you can do the following:
+- Open the `package.json` file.
+- Change the `"devDir": "..."` value to your own installation of Foundry's module folder.
+- Run the following command `npx gulp dev` to build the project and have the result copied to your Foundry Modules folder.
